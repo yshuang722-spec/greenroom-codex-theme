@@ -37,6 +37,6 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Build-GreenRoomTra
 
 运行时通过 `127.0.0.1:19335` 的本机调试接口操作客户端外观并检查必要的界面功能。它不会连接远程服务、读取或上传聊天内容，也不会修改客户端安装包。启用时会保存外观备份到 `state/`，恢复时使用该备份。
 
-## 许可证与品牌
+## 许可证
 
-本项目的原创代码按 MIT 许可证发布，见 [LICENSE](LICENSE)。Codex、OpenAI 名称和 Codex 标志属于其各自权利人；相关标志图形（包括 `assets/` 中的图标及 `effects.js` 内嵌图形）不包含在本项目的 MIT 许可中。Green Room 是非官方主题，与 OpenAI 无隶属或背书关系。请参阅 [OpenAI 品牌指南](https://openai.com/brand/)了解品牌使用要求。
+本项目按 MIT 许可证发布，见 [LICENSE](LICENSE)。Green Room 是社区独立制作的非官方主题，与 OpenAI 官方无关，也不代表 OpenAI 官方立场。
