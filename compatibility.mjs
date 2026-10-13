@@ -35,6 +35,10 @@ export function inspectModelTrigger(trigger) {
   const group=trigger.querySelector('[class*="ModelPickerTriggerModelGroup_"]');
   const model=trigger.querySelector('[class*="ModelPickerTriggerModelText_"]');
   if(group&&model?.textContent?.trim())return {status:'checked',ok:true};
+  // The native responsive composer intentionally replaces the label with a
+  // square icon button. Its hidden expanded counterpart can belong to another
+  // composer, so do not borrow that counterpart's model or flag this as broken.
+  if(!group&&!model&&trigger.classList?.contains('aspect-square')&&trigger.querySelector('svg')&&trigger.getAttribute('aria-label')&&trigger.getAttribute('data-selected-reasoning-effort'))return {status:'compact-layout',ok:null};
   const override=group?.querySelector(':scope > .min-w-0.truncate');
   if(/ChatGPT/i.test(trigger.getAttribute('aria-label')||'')&&override?.textContent?.trim())return {status:'not-applicable-chatgpt',ok:null};
   return {status:'checked',ok:false};

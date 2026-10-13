@@ -1,4 +1,4 @@
-$ErrorActionPreference='Stop'
+﻿$ErrorActionPreference='Stop'
 $base=Split-Path -Parent $PSScriptRoot
 $assets=Join-Path $base 'assets'
 Add-Type -AssemblyName PresentationCore,WindowsBase

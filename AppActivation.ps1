@@ -1,4 +1,4 @@
-$GreenRoomAppIdentityFile=Join-Path $PSScriptRoot 'state\client-app.txt'
+﻿$GreenRoomAppIdentityFile=Join-Path $PSScriptRoot 'state\client-app.txt'
 function Get-CodexAppId {
   $appIdFiles=@($GreenRoomAppIdentityFile,(Join-Path $env:USERPROFILE 'AppData\Local\Codex System Boot\client-app.txt'),(Join-Path $env:LOCALAPPDATA 'Codex System Boot\client-app.txt'))
   foreach($appIdFile in $appIdFiles){if(Test-Path -LiteralPath $appIdFile){$cached=(Get-Content -LiteralPath $appIdFile -Raw).Trim();if($cached.Contains('!')){return $cached}}}

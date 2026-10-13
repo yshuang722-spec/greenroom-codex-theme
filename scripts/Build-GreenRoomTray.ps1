@@ -1,4 +1,4 @@
-param([switch]$Staged)
+﻿param([switch]$Staged)
 $ErrorActionPreference = 'Stop'
 $base = Split-Path -Parent $PSScriptRoot
 $assets = Join-Path $base 'assets'

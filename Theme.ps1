@@ -1,4 +1,4 @@
-param([ValidateSet('Enable','Restore','Probe')][string]$Action='Enable', [switch]$WaitForClose, [switch]$BackgroundOnly)
+﻿param([ValidateSet('Enable','Restore','Probe')][string]$Action='Enable', [switch]$WaitForClose, [switch]$BackgroundOnly)
 $ErrorActionPreference='Stop'
 $themeDirectory=$PSScriptRoot
 $nodeCandidates=@(
@@ -34,19 +34,19 @@ function Confirm-Theme {
   for($attempt=0;$attempt -lt 20;$attempt++){
     & $nodeExe $runtimeFile verify | Out-Null
     if($LASTEXITCODE -eq 3){
-      $health=Get-Content -LiteralPath (Join-Path $stateDirectory 'compatibility-status.json') -Raw | ConvertFrom-Json
+      $health=Get-Content -LiteralPath (Join-Path $stateDirectory 'compatibility-status.json') -Raw -Encoding UTF8 | ConvertFrom-Json
       throw $health.message
     }
     if($LASTEXITCODE -eq 0){
       & $nodeExe $runtimeFile appearance-enable
-      if($LASTEXITCODE -ne 0){$health=Get-Content -LiteralPath (Join-Path $stateDirectory 'compatibility-status.json') -Raw | ConvertFrom-Json;throw $health.message}
-      $health=Get-Content -LiteralPath (Join-Path $stateDirectory 'compatibility-status.json') -Raw | ConvertFrom-Json
+      if($LASTEXITCODE -ne 0){$health=Get-Content -LiteralPath (Join-Path $stateDirectory 'compatibility-status.json') -Raw -Encoding UTF8 | ConvertFrom-Json;throw $health.message}
+      $health=Get-Content -LiteralPath (Join-Path $stateDirectory 'compatibility-status.json') -Raw -Encoding UTF8 | ConvertFrom-Json
       Write-Host $health.message;return
     }
     Start-Sleep -Seconds 1
   }
   $healthPath=Join-Path $stateDirectory 'compatibility-status.json'
-  if(Test-Path -LiteralPath $healthPath){$health=Get-Content -LiteralPath $healthPath -Raw | ConvertFrom-Json;throw $health.message}
+  if(Test-Path -LiteralPath $healthPath){$health=Get-Content -LiteralPath $healthPath -Raw -Encoding UTF8 | ConvertFrom-Json;throw $health.message}
   throw '无法完成主题检测。请确认 Codex 已启动并完成登录，再从托盘中重新开启主题。'
 }
 if($Action -eq 'Enable'){
@@ -58,7 +58,7 @@ if($Action -eq 'Enable'){
   } catch {}
   if(@($pages | Where-Object {$_.url -like 'app://*'}).Count -gt 0){
     & $nodeExe (Join-Path $themeDirectory 'runtime.mjs') appearance-enable
-    if($LASTEXITCODE -ne 0){$health=Get-Content -LiteralPath (Join-Path $stateDirectory 'compatibility-status.json') -Raw | ConvertFrom-Json;throw $health.message}
+    if($LASTEXITCODE -ne 0){$health=Get-Content -LiteralPath (Join-Path $stateDirectory 'compatibility-status.json') -Raw -Encoding UTF8 | ConvertFrom-Json;throw $health.message}
     Start-ThemeWatcher;Confirm-Theme;exit
   }
 }

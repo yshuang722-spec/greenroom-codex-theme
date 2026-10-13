@@ -71,8 +71,10 @@ function pickerFixture(state){
   return {
     getBoundingClientRect:()=>({width:140,height:32}),
     hasAttribute:key=>key==='data-daybreak-animation'&&!!state.animation,
-    getAttribute:key=>key==='aria-label'&&state.chatgpt?'选择 ChatGPT 模型':null,
+    classList:{contains:token=>token==='aspect-square'&&!!state.compact},
+    getAttribute:key=>key==='aria-label'?(state.chatgpt?'选择 ChatGPT 模型':state.compact?'选择模型':null):key==='data-selected-reasoning-effort'&&state.compact?'xhigh':null,
     querySelector:selector=>{
+      if(selector==='svg')return state.compact?{}:null;
       if(selector==='[data-daybreak-indicator]')return state.indicator?{}:null;
       if(selector.includes('ModelPickerTriggerPlaceholder_'))return state.placeholder?{}:null;
       if(selector.includes('ModelPickerTriggerModelGroup_'))return state.group?group:null;
@@ -104,6 +106,24 @@ test('a genuinely missing Codex label still warns after the transition ends',asy
   assert.equal(summarize([await inspectionFixture({modelTrigger})]).state,'active');
   state.animation=false;
   const inspected=await inspectionFixture({modelTrigger});
+  assert.equal(summarize([inspected]).state,'degraded');
+  assert.equal(inspected.checks.find(c=>c.id==='model-state').ok,false);
+});
+
+test('native compact icon layout does not report a changed model structure',async()=>{
+  const state={compact:true};const modelTrigger=pickerFixture(state);
+  const compact=await inspectionFixture({modelTrigger});
+  assert.equal(compact.modelCheck,'compact-layout');
+  assert.equal(summarize([compact]).state,'active');
+  assert.equal(compact.checks.some(c=>c.id==='model-state'),false);
+  Object.assign(state,{compact:false,group:true,model:'GPT-6 Astra'});
+  const expanded=await inspectionFixture({modelTrigger});
+  assert.equal(expanded.modelCheck,'checked');
+  assert.equal(expanded.checks.find(c=>c.id==='model-state').ok,true);
+});
+
+test('a broken expanded picker is not excused by having an icon',async()=>{
+  const inspected=await inspectionFixture({modelTrigger:pickerFixture({compact:true,group:true})});
   assert.equal(summarize([inspected]).state,'degraded');
   assert.equal(inspected.checks.find(c=>c.id==='model-state').ok,false);
 });

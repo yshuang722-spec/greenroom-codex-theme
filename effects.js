@@ -112,7 +112,9 @@
       const amount=value===null?0:Math.max(0,Math.min(100,Number(value)));
       ring.style.strokeDasharray=amount+' 100';ring.style.opacity=value===null||amount<=0?'0':'1';
       ring.setAttribute('data-remaining',value===null?'unknown':String(amount));
-      quotaBadge.querySelector('[data-quota-label="'+period+'"]').textContent=value===null?'—':Math.round(amount)+'%';
+      const label=quotaBadge.querySelector('[data-quota-label="'+period+'"]');
+      const text=value===null?'—':Math.round(amount)+'%';
+      if(label.textContent!==text)label.textContent=text;
     }
     const r=profile.getBoundingClientRect(),nativeStyle=getComputedStyle(profile),width=r.width+8,height=r.height+8;
     const radii=['borderTopLeftRadius','borderTopRightRadius','borderBottomRightRadius','borderBottomLeftRadius'].map(key=>{
@@ -224,7 +226,15 @@
     positionPowerWarning();
     positionLogo();positionQuota();if(changed&&motion.matches)restart();
   }
-  const pickerObserver=new MutationObserver(()=>{if(!pickerFrame)pickerFrame=requestAnimationFrame(updatePicker);});
+  // Ignore our own overlays: quota text updates must not schedule another
+  // picker update and form an endless DOM/layout loop near selectable text.
+  const pickerObserver=new MutationObserver(records=>{
+    const nativeChange=records.some(record=>{
+      const element=record.target.nodeType===1?record.target:record.target.parentElement;
+      return !element?.closest('#green-room-quota,#green-room-logo,#green-room-power-warning,#green-room-edge-alert,#green-room-flow,.green-room-warning');
+    });
+    if(nativeChange&&!pickerFrame)pickerFrame=requestAnimationFrame(updatePicker);
+  });
   pickerObserver.observe(document.body,{childList:true,subtree:true,characterData:true,attributes:true,attributeFilter:['aria-valuenow','aria-valuemax','aria-valuemin','data-fast-mode-enabled','data-daybreak-animation','data-selected-reasoning-effort','data-max-effort','data-daybreak-indicator','data-active','aria-expanded','data-state','class']});
   const surface=document.querySelector('[data-app-shell-workspace-row]');if(surface)observer.observe(surface);
   const visibility=()=>{if(document.hidden)cancelAnimationFrame(frame);else restart();};
