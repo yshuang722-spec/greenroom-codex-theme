@@ -36,3 +36,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Build-GreenRoomTra
 主题针对 Windows 桌面版 Codex 的 Electron 界面实现。本机开发与视觉检查使用 Codex `26.1007.2314.0`；客户端内部模块和页面结构可能随升级变化，因此测试通过不代表新版客户端已完成视觉验收。运行 `Check.cmd` 检查当前客户端的主题状态。
 
 运行时通过 `127.0.0.1:19335` 的本机调试接口操作客户端外观并检查必要的界面功能。它不会连接远程服务、读取或上传聊天内容，也不会修改客户端安装包。启用时会保存外观备份到 `state/`，恢复时使用该备份。
+
+## 许可证与品牌
+
+本项目的原创代码按 MIT 许可证发布，见 [LICENSE](LICENSE)。Codex、OpenAI 名称和 Codex 标志属于其各自权利人；相关标志图形（包括 `assets/` 中的图标及 `effects.js` 内嵌图形）不包含在本项目的 MIT 许可中。Green Room 是非官方主题，与 OpenAI 无隶属或背书关系。请参阅 [OpenAI 品牌指南](https://openai.com/brand/)了解品牌使用要求。
