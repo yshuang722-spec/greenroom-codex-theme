@@ -1,0 +1,457 @@
+/* Green Room v4 — continuous upward ribbons, 40% denser columns. */
+html[data-green-room], html[data-green-room] [data-theme] {
+  color-scheme: dark;
+  --gr-bg: #020c09;
+  --gr-panel: #0b1b19ad;
+  --gr-raised: #15382e;
+  --gr-text: #c8e4d8;
+  --gr-input: #29da88;
+  --gr-glow: #65ff94;
+  --gr-border: #245448;
+  --gr-scrollbar: #266a47;
+  --color-surface: var(--gr-bg) !important;
+  --color-surface-canvas: var(--gr-bg) !important;
+  --color-surface-secondary: var(--gr-panel) !important;
+  --color-surface-tertiary: #102b24 !important;
+  --color-surface-card: var(--gr-panel) !important;
+  --color-surface-elevated: #102b24 !important;
+  --color-surface-elevated-secondary: var(--gr-raised) !important;
+  --color-background-primary: var(--gr-bg) !important;
+  --color-background-primary-soft: var(--gr-panel) !important;
+  --color-background-secondary-soft: var(--gr-raised) !important;
+  --color-background-primary-ghost-hover: #173b30 !important;
+  --color-background-primary-ghost-active: #20543f !important;
+  --color-background-secondary-ghost-hover: #173b30 !important;
+  --color-background-composer-surface: #193e32 !important;
+  --color-background-user-message: #15382e !important;
+  --color-background-user-message-compact: #15382e !important;
+  --color-background-primary-solid: #39db8c !important;
+  --color-text-primary-solid: #02160c !important;
+  --color-text: var(--gr-text) !important;
+  --color-text-prose: var(--gr-text) !important;
+  --color-text-primary: var(--gr-text) !important;
+  --color-text-secondary: #9dbfb0 !important;
+  --color-text-tertiary: #7ea392 !important;
+  --color-text-accent: #40e795 !important;
+  --color-text-emphasis: var(--gr-glow) !important;
+  --color-border: var(--gr-border) !important;
+  --color-border-light: #183e32 !important;
+  --color-border-heavy: #337760 !important;
+  --color-border-subtle: #183e32 !important;
+  --color-ring-primary: #65ff94 !important;
+  --app-color-background-shell: var(--gr-panel) !important;
+  --app-color-background-surface: var(--gr-bg) !important;
+  --app-color-background-surface-under: var(--gr-bg) !important;
+  --app-color-background-elevated-primary: #102b24 !important;
+  --app-color-background-elevated-primary-opaque: #102b24 !important;
+  --app-color-background-elevated-secondary: #15382e !important;
+  --app-color-background-editor-opaque: #06120e !important;
+  --app-color-background-application-menu: #102b24 !important;
+  --app-color-background-accent: #39db8c !important;
+  --app-color-text-foreground: var(--gr-text) !important;
+  --app-color-text-foreground-secondary: #9dbfb0 !important;
+  --app-color-text-foreground-tertiary: #7ea392 !important;
+  --app-color-text-accent: #40e795 !important;
+  --app-color-text-on-accent: #02160c !important;
+  --app-color-border: var(--gr-border) !important;
+  --app-shell-panel-background: var(--gr-panel) !important;
+  --app-shell-sidebar-popover-background: #102b24 !important;
+  --codeblock-background-color: #06120e !important;
+  --color-codex-terminal-background: #06120e !important;
+}
+html[data-green-room] body { background: var(--gr-bg); color: var(--gr-text); isolation: isolate; }
+html[data-green-room] #green-room-flow { position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:-1;opacity:.8; }
+html[data-green-room] #green-room-logo {
+  position:fixed;width:94.64px;height:94.64px;transform:translate(-50%,-50%);
+  pointer-events:none;z-index:-1;color:#65ff94;
+  filter:drop-shadow(0 0 4px #65ff9459) drop-shadow(0 0 10px #36ed7b24);
+}
+html[data-green-room] #green-room-logo svg {width:100%;height:100%;display:block;}
+html[data-green-room], html[data-green-room] [data-theme] {
+  --color-surface: #020c09b8 !important;
+  --color-surface-canvas: transparent !important;
+  --app-color-background-surface: #020c09b8 !important;
+  --app-color-background-surface-under: transparent !important;
+}
+html[data-green-room] :is(nav,aside,[class*="Sidebar_"]) :is(a[href],button:not([aria-haspopup]):not(:has(svg:only-child)), [role="treeitem"]),
+html[data-green-room] .nav {
+  border:1px solid #24544880 !important;
+  border-radius:12px !important;
+  background:#112c247a !important;
+  color:#9dbfb0 !important;
+  box-shadow:inset 0 1px 0 #83ffb208;
+  transition:background .18s,border-color .18s,box-shadow .18s;
+}
+html[data-green-room] :is(nav,aside,[class*="Sidebar_"]) :is(a[href],button:not([aria-haspopup]):not(:has(svg:only-child)),[role="treeitem"]):hover,
+html[data-green-room] .nav:hover { background:#1a4334 !important; border-color:#3c8860 !important; }
+html[data-green-room] :is(nav,aside,[class*="Sidebar_"]) :is([aria-current="page"],[aria-selected="true"],[data-state="active"]),
+html[data-green-room] .nav[aria-current="page"] {
+  background:#1b5039 !important;border:1px solid #65ff94a6 !important;
+  color:#85ffaa !important;box-shadow:inset 0 0 14px #43ff8620,0 0 10px #43ff8626;
+}
+/* Scope to actual composer shells. Do not recolor document editors. */
+html[data-green-room] :is(.composer-wrap, [class*="ComposerLayoutRoot_"]) {
+  --composer-layout-surface-background: #193e32 !important;
+  --composer-editor-placeholder-opacity: 1;
+}
+html[data-green-room] :is(.composer-wrap, [class*="ComposerLayoutRoot_"])
+  :is(.ProseMirror[contenteditable="true"], textarea) {
+  color: var(--gr-input) !important;
+  caret-color: var(--gr-glow) !important;
+  text-shadow: 0 0 3px #39db8c30;
+}
+html[data-green-room] :is(.composer-wrap, [class*="ComposerLayoutRoot_"])
+  :is(textarea::placeholder, [data-cumberbatch], .placeholder::before) {
+  color: #9fc6b3 !important;
+}
+/* Emphasis and selected navigation glow; normal body text stays crisp. */
+html[data-green-room] :is(.markdown, [data-markdown], [data-markdown-text-style], [class*="MarkdownRoot_"]) :is(strong, b, em, a[href]),
+html[data-green-room] :is(nav, aside) [aria-current="page"],
+html[data-green-room] [data-green-room-emphasis] {
+  color: var(--gr-glow) !important;
+  text-shadow: 0 0 5px #65ff9459, 0 0 12px #36ed7b24;
+}
+html[data-green-room] :is([data-markdown-text-style], [class*="MarkdownRoot_"]) :is(strong, b, em, a[href]) :is(span,code) {
+  color:inherit !important;
+  text-shadow:inherit;
+}
+html[data-green-room] :is([data-markdown-text-style], [class*="MarkdownRoot_"]) a[href] {
+  text-decoration-color:#65ff9480;
+  text-underline-offset:3px;
+}
+html[data-green-room] :is([data-markdown-text-style], [class*="MarkdownRoot_"]) a[href]:hover {
+  color:#b5ffce !important;
+  text-shadow:0 0 5px #65ff9490,0 0 10px #39ef8e50;
+  text-decoration:underline;
+}
+html[data-green-room] a:focus-visible,
+html[data-green-room] button:focus-visible {
+  outline: 2px solid #65ff94 !important;
+  outline-offset: 2px;
+  box-shadow: 0 0 9px #65ff9438;
+}
+html[data-green-room] mark {
+  background: #194c30;
+  color: #85ffaa;
+  text-shadow: 0 0 5px #65ff9459;
+}
+html[data-green-room] ::selection { background: #216845; color: #edfff3; }
+/* Verified sidebar row hooks in the installed 26.1007 renderer. */
+html[data-green-room] :is([data-app-action-sidebar-thread-row], [data-app-action-sidebar-project-row]) {
+  border:1px solid #24544880 !important;
+  border-radius:12px !important;
+  background:#112c247a !important;
+}
+html[data-green-room] [data-app-action-sidebar-scroll] :is(a[href],button):not([aria-haspopup]):not([aria-label]):not(:has(svg:only-child)) {
+  border-radius:12px;
+}
+html[data-green-room] :is([data-app-action-sidebar-thread-active="true"],[data-app-action-sidebar-thread-selected="true"]) {
+  background:#1b5039 !important;border:1px solid #65ff94a6 !important;
+  color:#85ffaa !important;box-shadow:inset 0 0 14px #43ff8620,0 0 10px #43ff8626;
+}
+/* Reveal the decorative canvas underneath the sidebar without changing hit areas. */
+html[data-green-room] :is(aside,[class*="ConversationSidebar_"],[data-app-action-sidebar-scroll]) {
+  background-color:#0b1b198c !important;
+}
+/* Opaque backing fills the client viewport without resizing any panel. */
+html[data-green-room]:not(.compact-window),
+html[data-green-room]:not(.compact-window) body {
+  background-color:#020c09 !important;
+}
+/* Floating titlebars overlap page controls. Preserve their native conditional
+   backgrounds; tinting these shells paints a dark strip over the page. */
+html[data-green-room] [class*="ApplicationMenuTopBar_"],
+html[data-green-room] [data-app-shell-main-titlebar],
+html[data-green-room] [data-app-shell-titlebar] {
+  border-top-color:transparent !important;
+  border-bottom-color:transparent !important;
+  box-shadow:none !important;
+}
+html[data-green-room] [class*="MainContentSurface_"] {
+  border-top-color:transparent !important;
+  border-left-color:var(--gr-border) !important;
+  box-shadow:none !important;
+}
+html[data-green-room] [class*="SidebarToolbarSeparator_"] {
+  opacity:0 !important;
+}
+/* A panel separator belongs to the rail itself, not descendant utility classes. */
+html[data-green-room] nav[class~="group/sidebar-rail"] {
+  box-shadow:inset -1px 0 0 var(--gr-border) !important;
+}
+/* Preserve native composer shadows. New-chat composers use a square, transparent
+   layout root around a separate rounded input; outlining that root creates a box. */
+/* Pale green UI text. Preserve semantic warning/danger colors and input green. */
+html[data-green-room],html[data-green-room] [data-theme] {
+  --gr-text:#b8dcca;
+  --color-text:#b8dcca !important;
+  --color-text-prose:#b8dcca !important;
+  --color-text-primary:#b8dcca !important;
+  --color-text-secondary:#a3cdb8 !important;
+  --color-text-tertiary:#90bba5 !important;
+  --color-text-accent:#aedfc1 !important;
+  --app-color-text-foreground:#b8dcca !important;
+  --app-color-text-foreground-secondary:#a3cdb8 !important;
+  --app-color-text-foreground-tertiary:#90bba5 !important;
+  --app-color-text-accent:#aedfc1 !important;
+}
+html[data-green-room] [data-app-action-sidebar-thread-row],
+html[data-green-room] [data-app-action-sidebar-thread-title],
+html[data-green-room] [class*="ApplicationMenuTopBar_"] button {
+  color:#b0d9be !important;
+}
+/* Use one continuous backdrop across the header and workspace gutter. */
+html[data-green-room] [data-app-shell-frame] {
+  background-color:#020c09b8 !important;
+}
+html[data-green-room] [class*="ApplicationMenuTopBar_"],
+html[data-green-room] [class*="MainContentSurface_"] {
+  background-color:transparent !important;
+}
+/* Navigation buttons derive their text from ghost variants locally. */
+html[data-green-room], html[data-green-room] [data-theme] {
+  --color-text-primary-ghost:#b0d9be !important;
+  --color-text-primary-ghost-hover:#c5ead2 !important;
+  --color-text-secondary-ghost:#a3cdb8 !important;
+  --color-text-secondary-ghost-hover:#b8dcca !important;
+}
+html[data-green-room] .sidebar-navigation :is(button,a,[role="button"]) {
+  --color-text:#b0d9be !important;
+  --color-text-primary-ghost:#b0d9be !important;
+  --color-text-primary-ghost-hover:#c5ead2 !important;
+}
+html[data-green-room] .sidebar-navigation :is([aria-current="page"],[aria-selected="true"],[data-app-action-sidebar-thread-active="true"]) {
+  --color-text:#c4f4cd !important;
+}
+/* The native page surface paints a hairline ring, even with zero borders. */
+html[data-green-room] [class*="PageSurface_"] {
+  box-shadow:none !important;
+}
+html[data-green-room] [data-app-shell-frame] .draggable.h-toolbar.border-b {
+  border-bottom-color:transparent !important;
+}
+/* Attenuate only the flow, so the background logo retains its highlight color. */
+html[data-green-room] [data-app-shell-frame] {background-color:transparent !important;}
+html[data-green-room] #green-room-flow {opacity:.224;}
+/* Dim center emblem to the same subtle glow as the moving data. */
+html[data-green-room] #green-room-logo {
+  color:#41ff97;opacity:.16;
+  filter:drop-shadow(0 0 3px #32ff8c35);
+}
+/* Ultra power only: stronger light on the existing track, no layout change. */
+html[data-green-room] [data-green-room-ultra] [data-model-picker-power-slider] [class*="_Track_"] {
+  box-shadow:0 0 5px #65ff9470,0 0 13px #39ef8e45;
+}
+html[data-green-room] [data-green-room-ultra] [data-model-picker-power-slider] [class*="_Range_"] {
+  filter:brightness(1.18) drop-shadow(0 0 5px #65ff9480);
+}
+@keyframes green-room-bolt-glow {
+  0%,100% {opacity:.5;filter:drop-shadow(0 0 2px #65ff9480) drop-shadow(0 0 6px #39ef8e45);}
+  50% {opacity:1;filter:drop-shadow(0 0 7px #65ff94ff) drop-shadow(0 0 16px #39ef8eb0);}
+}
+@keyframes green-room-overload {
+  0%,100% {opacity:.45;text-shadow:0 0 2px #ff505040;}
+  48% {opacity:1;text-shadow:0 0 5px #ff5050a0;}
+}
+html[data-green-room] [class*="FastModeToggle_"] {
+  overflow:visible !important;
+}
+html[data-green-room] [class*="FastModeToggle_"]:is([data-fast-mode-enabled="true"],:has([data-fast-mode-enabled="true"])) svg:not(.green-room-warning-icon) {
+  color:#65ff94 !important;animation:green-room-bolt-glow 2.4s ease-in-out infinite;
+}
+html[data-green-room] {
+  --gr-overload-label:"WARNING\A Model Overload";
+  --gr-full-power-label:"Full Power Output";
+}
+html[data-green-room]:lang(zh) {
+  --gr-overload-label:"警告\A 模型超载";
+  --gr-full-power-label:"全功率输出";
+}
+html[data-green-room] [data-model-picker-power-slider][data-green-room-full-power]::after {
+  content:var(--gr-full-power-label);
+  position:absolute;right:18px;top:-2px;
+  pointer-events:none;white-space:nowrap;font-size:13px;line-height:18px;font-weight:600;
+  color:#65ff94;animation:green-room-power-breathe 2.4s ease-in-out infinite;
+}
+/* A dedicated caption gap separates the added label from native model text. */
+html[data-green-room] [data-model-picker-power-slider][data-green-room-full-power] {
+  height:48px;padding-top:18px;
+}
+/* Remove the native rectangular hover tile; glow follows SVG alpha only. */
+html[data-green-room] [class*="FastModeToggle_"],
+html[data-green-room] [class*="FastModeToggle_"] [class*="FastModeToggleContent_"] {
+  background:transparent !important;box-shadow:none !important;border-color:transparent !important;overflow:visible !important;
+}
+html[data-green-room] [class*="FastModeToggle_"] svg:not(.green-room-warning-icon) {overflow:visible !important;}
+html[data-green-room] [class*="FastModeToggle_"] .truncate:has([class*="FastModeToggleContent_"]) {
+  overflow:visible !important;text-overflow:clip !important;
+}
+/* Keep the thumb visible at rest, including the client's hover-only scrollbar. */
+html[data-green-room] {
+  --color-token-scrollbar-slider-background:var(--gr-scrollbar) !important;
+  --color-token-scrollbar-slider-hover-background:var(--gr-scrollbar) !important;
+  --color-token-scrollbar-slider-active-background:var(--gr-scrollbar) !important;
+}
+html[data-green-room] * {scrollbar-color:var(--gr-scrollbar) transparent !important;}
+html[data-green-room] .scrollbar-on-hover::-webkit-scrollbar-thumb,
+html[data-green-room] ::-webkit-scrollbar-thumb {
+  background:var(--gr-scrollbar) !important;background-color:var(--gr-scrollbar) !important;border-radius:999px;
+  opacity:1 !important;filter:none !important;mix-blend-mode:normal !important;transition:none !important;
+}
+html[data-green-room] .scrollbar-on-hover:hover::-webkit-scrollbar-thumb,
+html[data-green-room] ::-webkit-scrollbar-thumb:hover {background:var(--gr-scrollbar) !important;background-color:var(--gr-scrollbar) !important;opacity:1 !important;}
+html[data-green-room] ::-webkit-scrollbar-thumb:active {background:var(--gr-scrollbar) !important;background-color:var(--gr-scrollbar) !important;opacity:1 !important;}
+html[data-green-room] :is([data-radix-scroll-area-thumb],[data-scrollbar-thumb],[class*="ScrollAreaThumb"],[class*="ScrollbarThumb"]) {
+  background:var(--gr-scrollbar) !important;background-color:var(--gr-scrollbar) !important;
+  opacity:1 !important;filter:none !important;mix-blend-mode:normal !important;transition:none !important;
+}
+/* Codex's conversation fade mask is applied to the scroll container itself, so it dims the scrollbar too. */
+html[data-green-room] .thread-scroll-container {
+  -webkit-mask:none !important;-webkit-mask-image:none !important;
+  mask:none !important;mask-image:none !important;
+}
+@keyframes green-room-power-breathe {
+  0%,100% {opacity:.65;text-shadow:0 0 2px #65ff9430;}
+  50% {opacity:1;text-shadow:0 0 5px #65ff9480,0 0 10px #39ef8e40;}
+}
+html[data-green-room] .green-room-warning {
+  display:none;position:absolute;left:calc(100% + 3px);top:50%;transform:translateY(-50%);
+  align-items:center;gap:5px;pointer-events:none;white-space:pre;color:#ff707b;
+  font-size:11px;line-height:14px;font-weight:600;text-align:center;
+  animation:green-room-red-breathe 2.4s ease-in-out infinite;
+}
+html[data-green-room] [data-green-room-fast-enabled] > .green-room-warning {display:flex;}
+html[data-green-room] .green-room-warning .green-room-warning-icon {
+  width:31px;height:28px;flex:none;color:#ff707b !important;animation:none !important;
+}
+html[data-green-room] .green-room-warning-text::before {content:var(--gr-overload-label);}
+/* Reserve enough horizontal room for readable bilingual warning text. */
+html[data-green-room] [class*="ModelPickerDropdownContent_"]:has([data-model-picker-view="simple"]) {
+  width:min(340px,calc(100vw - 40px)) !important;
+}
+/* Four running red edge lights and an inward fading halo. */
+html[data-green-room] #green-room-edge-alert {
+  position:fixed;inset:0;pointer-events:none;z-index:2147483000;display:none;
+}
+html[data-green-room][data-green-room-overload] #green-room-edge-alert {display:block;}
+html[data-green-room] #green-room-edge-alert span {
+  position:absolute;pointer-events:none;box-shadow:0 0 12px #ff364bd0,0 0 26px #ff223c9c;
+}
+html[data-green-room] #green-room-edge-alert :is(.gr-edge-top,.gr-edge-bottom) {
+  left:0;right:0;height:3px;
+  background:linear-gradient(90deg,#ff32456b 0%,#ff32456b 30%,#ff4050f0 42%,#ffc0caff 50%,#ff4050f0 58%,#ff32456b 70%);
+  background-size:220% 100%;animation:gr-edge-run-x 2.4s linear infinite,gr-edge-pulse 2.4s ease-in-out infinite;
+}
+html[data-green-room] #green-room-edge-alert .gr-edge-top {top:0;}
+html[data-green-room] #green-room-edge-alert .gr-edge-bottom {bottom:0;animation-name:gr-edge-run-x-reverse,gr-edge-pulse;}
+html[data-green-room] #green-room-edge-alert .gr-edge-haze {
+  position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(to right,#ff32454d,transparent 48px),linear-gradient(to left,#ff32454d,transparent 48px),linear-gradient(to bottom,#ff32454d,transparent 48px),linear-gradient(to top,#ff32454d,transparent 48px);
+  box-shadow:inset 0 0 28px #ff27355c;animation:gr-edge-haze-breathe 2.4s ease-in-out infinite;
+}
+html[data-green-room] #green-room-edge-alert :is(.gr-edge-left,.gr-edge-right) {
+  top:0;bottom:0;width:3px;
+  background:linear-gradient(180deg,#ff32456b 0%,#ff32456b 30%,#ff4050f0 42%,#ffc0caff 50%,#ff4050f0 58%,#ff32456b 70%);
+  background-size:100% 220%;animation:gr-edge-run-y 2.4s linear infinite,gr-edge-pulse 2.4s ease-in-out infinite;
+}
+html[data-green-room] #green-room-edge-alert .gr-edge-left {left:0;animation-name:gr-edge-run-y-reverse,gr-edge-pulse;}
+html[data-green-room] #green-room-edge-alert .gr-edge-right {right:0;}
+/* The warning peaks at 50%; the band starts only after that peak, during the dimming half. */
+@keyframes gr-edge-run-x {0%,50% {background-position:180% 0;}100% {background-position:-80% 0;}}
+@keyframes gr-edge-run-y {0%,50% {background-position:0 180%;}100% {background-position:0 -80%;}}
+@keyframes gr-edge-run-x-reverse {0%,50% {background-position:-80% 0;}100% {background-position:180% 0;}}
+@keyframes gr-edge-run-y-reverse {0%,50% {background-position:0 -80%;}100% {background-position:0 180%;}}
+@keyframes gr-edge-pulse {0%,100% {opacity:.72;}50% {opacity:1;}}
+@keyframes gr-edge-haze-breathe {0%,100% {opacity:.4;}50% {opacity:.95;}}
+@media (prefers-reduced-motion:reduce) {
+  html[data-green-room] [class*="FastModeToggle_"] svg,
+  html[data-green-room] [class*="FastModeToggle_"]::before,
+  html[data-green-room] .green-room-warning,
+  html[data-green-room] [data-model-picker-power-slider]::after,
+  html[data-green-room] #green-room-logo,
+  html[data-green-room] #green-room-edge-alert span,
+  html[data-green-room] #green-room-edge-alert .gr-edge-haze {animation:none !important;}
+}
+
+/* Original native bolt with the initial subtle glow, no replacement silhouette. */
+html[data-green-room] [class*="FastModeToggle_"][data-green-room-fast-enabled] svg:not(.green-room-warning-icon) {visibility:visible;}
+@keyframes green-room-red-breathe {
+  0%,100% {opacity:.48;filter:drop-shadow(0 0 3px #ff4b5578) drop-shadow(0 0 8px #ff26394a);}
+  50% {opacity:1;filter:drop-shadow(0 0 9px #ff626cff) drop-shadow(0 0 22px #ff2639dc);}
+}
+html[data-green-room][data-green-room-overload] #green-room-logo {
+  color:#ff707b;animation:green-room-red-breathe 2.4s ease-in-out infinite;
+}
+html[data-green-room] #green-room-quota {
+  position:fixed;pointer-events:none;z-index:45;
+}
+html[data-green-room] #green-room-quota .gr-quota-label {
+  position:absolute;left:50%;top:-14px;transform:translateX(-50%);display:flex;align-items:center;justify-content:center;gap:2px;
+  white-space:nowrap;font:600 var(--gr-quota-label-size,8px)/1 system-ui,sans-serif;letter-spacing:-.03em;pointer-events:none;
+}
+html[data-green-room] #green-room-quota [data-quota-label="five-hour"] {color:#65ff94;}
+html[data-green-room] #green-room-quota [data-quota-label="weekly"] {color:#39e98a;}
+html[data-green-room] #green-room-quota .gr-quota-separator {color:#8bb9a0;}
+html[data-green-room] #green-room-quota svg {width:100%;height:100%;overflow:visible;}
+html[data-green-room] #green-room-quota path {fill:none;stroke-width:1.6;}
+html[data-green-room] #green-room-quota .gr-quota-track {display:none;}
+html[data-green-room] #green-room-quota [data-quota-period] {stroke-linecap:round;transition:stroke-dasharray .35s ease;}
+html[data-green-room] #green-room-quota [data-quota-period="five-hour"] {stroke:#65ff94;filter:none;}
+html[data-green-room] #green-room-quota [data-quota-period="weekly"] {stroke:#39e98a;filter:none;}
+html[data-green-room] #green-room-power-warning {
+  position:fixed;transform:translate(-50%,-100%);width:max-content;text-align:center;display:none;align-items:center;justify-content:center;
+  line-height:1.4;color:#ff707b;text-shadow:0 0 5px #ff4b5590;
+  font-weight:500;
+  pointer-events:none;z-index:44;box-sizing:border-box;
+}
+html[data-green-room] #green-room-power-warning svg {position:absolute;right:calc(100% + .45em);top:50%;transform:translateY(-50%);width:1.25em;height:1.25em;}
+html[data-green-room] #green-room-power-warning span::before {content:"Do you really want to wield this power that isn't yours?";}
+html[data-green-room]:lang(zh) #green-room-power-warning span::before {content:"你真的要使用这份不属于你的力量吗？";}
+@media (prefers-reduced-motion:reduce) {
+  html[data-green-room] #green-room-logo {animation:none !important;}
+}
+
+/* Keep warning readable while breathing in phase with the custom emblem. */
+html[data-green-room][data-green-room-astra-power] #green-room-power-warning {
+  animation:green-room-red-breathe 2.4s ease-in-out infinite;
+}
+@media (prefers-reduced-motion:reduce) {
+  html[data-green-room] #green-room-power-warning {animation:none !important;}
+}
+
+/* Match both Astra warnings to the terminal emblem's exact red pulse. */
+html[data-green-room] .green-room-warning {
+  left:calc(100% - 5px);color:#ff707b;
+  animation:green-room-red-breathe 2.4s ease-in-out infinite;
+}
+html[data-green-room] .green-room-warning .green-room-warning-icon {color:#ff707b !important;}
+
+/* Composer Add menu: distinguish both built-in actions and plugin rows without boxing other popovers. */
+html[data-green-room] [data-composer-overlay-floating-ui="true"]
+  [data-mention-list-scroll-area] [data-list-navigation-item="true"] {
+  min-height:var(--app-menu-item-height,44px) !important;
+  margin:0 !important;
+  border:0 !important;
+  border-radius:0 !important;
+  background:transparent !important;
+  color:#c8e4d8 !important;
+  opacity:1 !important;
+  box-shadow:inset 0 -1px 0 #426653 !important;
+  transition:background-color .14s ease,box-shadow .14s ease,color .14s ease;
+}
+html[data-green-room] [data-composer-overlay-floating-ui="true"]
+  [data-mention-list-scroll-area] [data-list-navigation-item="true"]:is(:hover,[aria-selected="true"],[data-highlighted="true"],:focus-visible) {
+  border-radius:8px !important;
+  background:#1b5039 !important;
+  color:#effff4 !important;
+  box-shadow:inset 3px 0 0 #65ff94,inset 0 0 0 1px #65ff9480,0 0 12px #39db8c48 !important;
+}
+html[data-green-room] [data-composer-overlay-floating-ui="true"]
+  [data-mention-list-scroll-area] [data-list-navigation-item="true"] :is(span,p,small) {
+  color:#b8ddc9 !important;
+  opacity:1 !important;
+}
+html[data-green-room] [data-composer-overlay-floating-ui="true"]
+  [data-mention-list-scroll-area] [data-list-navigation-item="true"]:is(:hover,[aria-selected="true"],[data-highlighted="true"],:focus-visible) :is(span,p,small) {
+  color:#effff4 !important;
+}

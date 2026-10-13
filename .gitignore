@@ -1,0 +1,15 @@
+/state/
+/assets/codex-logo-tray.png
+/assets/GreenRoomTray.ico
+*.log
+*.tmp
+*.previous.exe
+*-staged.exe
+*.before-*
+*.lnk
+Inspect-TrayMenu.exe
+GreenRoomLaunch.exe
+preview-animated.gif
+preview.html
+preview.png
+verification.json
