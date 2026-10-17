@@ -1,31 +1,51 @@
 // Client adapters are version-sensitive. Discover the chunk, check known exports,
 // and fail explicitly rather than guessing a renamed internal function.
-export const clientResolver = String.raw`async function resolveGreenRoomClient(required='settings') {
+async function resolveGreenRoomClient(required='settings') {
   const cached=window.__greenRoomClientAdapter;
-  if(cached&&typeof cached[required]==='function')return cached;
-  const pattern=/app-shared-[\da-f]+\.js/g;
-  const resources=performance.getEntriesByType('resource').map(e=>e.name);
-  const scripts=[...document.scripts].map(e=>e.src).filter(Boolean);
-  const names=new Set();
-  for(const url of [...resources,...scripts])for(const name of url.match(pattern)||[])names.add(name);
-  if(!names.size)for(const url of scripts.filter(s=>s.startsWith('app://')).slice(0,3)){
-    try{const r=await fetch(url,{signal:AbortSignal.timeout(1500)});if(r.ok)for(const name of (await r.text()).match(pattern)||[])names.add(name);}catch{}
-  }
-  names.add('app-shared-737655e1fb23.js');
-  let found=false;
-  for(const name of names){
-    try{
+  if(cached?.discoveryVersion===2&&typeof cached[required]==='function')return cached;
+  if(window.__greenRoomClientDiscovery)return window.__greenRoomClientDiscovery;
+  const discover=async()=>{
+    const scripts=[...document.scripts].map(e=>e.src).filter(s=>s.startsWith('app://'));
+    const names=new Set();
+    const sources=new Map();
+    const load=async url=>{const r=await fetch(url,{signal:AbortSignal.timeout(4000)});if(!r.ok)return null;return r.text();};
+    const collect=code=>{for(const name of code?.match(/app-(?:shared|initial|main)-[\da-f]+\.js/g)||[])names.add(name);};
+    for(const entry of scripts.slice(0,3)){try{collect(await load(entry));}catch{}}
+    for(const resource of performance.getEntriesByType('resource'))collect(resource.name);
+    for(const name of names){
+      if(sources.size>=12)break;
+      try{const code=await load(new URL('/assets/'+name,location.href).href);if(code){sources.set(name,code);collect(code);}}catch{}
+    }
+    const adapter={discoveryVersion:2};
+    const exported=(code,local)=>{
+      const exports=code.slice(code.lastIndexOf('export{'));
+      const escaped=local.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+      return exports.match(new RegExp('(?:[,{])\\s*'+escaped+'\\s+as\\s+([\\w$]+)'))?.[1];
+    };
+    for(const [name,code] of sources){
+      // Match the request's semantic call site, then resolve its actual export.
+      const settingsLocal=code.match(/\?\?([\w$]+)\([`"']get-settings[`"']/)?.[1];
+      const quotaLocal=code.match(/async function ([\w$]+)\(\{[^{}]{0,250}\}\)\{try\{return[^{}]{0,200}\.safeGet\([`"']\/wham\/usage[`"']/)?.[1];
+      const settingsExport=settingsLocal&&exported(code,settingsLocal);
+      const quotaExport=quotaLocal&&exported(code,quotaLocal);
+      if(!settingsExport&&!quotaExport)continue;
       const url=new URL('/assets/'+name,location.href).href;
-      const response=await fetch(url,{signal:AbortSignal.timeout(1500)});if(!response.ok)continue;
-      const module=await import(url);found=true;
-      const adapter={url,settings:module.MMt,quota:module.CW};
-      window.__greenRoomClientAdapter=adapter;
-      if(typeof adapter[required]==='function')return adapter;
-    }catch{}
-  }
-  const error=new Error(found?'客户端内部接口已变化，需要更新主题兼容适配。':'找不到客户端外观模块，可能是客户端更新后资源结构发生变化。');
-  error.code=found?'client-api-changed':'client-module-missing';throw error;
-}`;
+      const module=await import(url);
+      if(settingsExport&&typeof module[settingsExport]==='function'){adapter.settings=module[settingsExport];adapter.url=url;}
+      if(quotaExport&&typeof module[quotaExport]==='function'){adapter.quota=module[quotaExport];adapter.quotaURL=url;}
+    }
+    if(typeof adapter.settings!=='function'||typeof adapter.quota!=='function'){
+      const error=new Error('无法确认客户端额度或设置请求接口，需要更新主题适配。');
+      error.code=sources.size?'client-api-changed':'client-module-missing';throw error;
+    }
+    window.__greenRoomClientAdapter=adapter;
+    return adapter;
+  };
+  const pending=discover();window.__greenRoomClientDiscovery=pending;
+  try{return await pending;}finally{if(window.__greenRoomClientDiscovery===pending)delete window.__greenRoomClientDiscovery;}
+}
+
+export const clientResolver = resolveGreenRoomClient.toString();
 
 // The native picker temporarily replaces its normal label during the fast-mode
 // animation. ChatGPT also uses an intentional label override (e.g. Instant).
@@ -76,7 +96,6 @@ export function inspectionExpression() {
     if(profile)add('quota-display',visible(quota)&&!!quota.querySelector('[data-quota-period="five-hour"]')&&!!quota.querySelector('[data-quota-period="weekly"]'),'warning','头像额度显示未加载，可能是客户端账户区域结构发生变化。');
     const trigger=[...document.querySelectorAll('[data-codex-intelligence-trigger]')].find(visible);
     const modelState=inspectModelTrigger(trigger);
-    if(modelState.ok!==null)add('model-state',modelState.ok,'warning','模型状态结构已变化，主题的模型警告效果可能不可用。');
     for(const slider of [...document.querySelectorAll('[data-model-picker-power-slider]')].filter(visible)){
       const thumb=slider.querySelector('[role="slider"][aria-valuenow]');
       add('model-power',!!thumb&&Number(thumb.getAttribute('aria-valuemax'))>Number(thumb.getAttribute('aria-valuemin')),'warning','思考强度控件结构已变化，满强度警告可能无法正确触发。');

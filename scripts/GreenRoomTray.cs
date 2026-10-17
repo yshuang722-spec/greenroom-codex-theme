@@ -226,7 +226,7 @@ internal sealed class TrayContext : ApplicationContext
         string phase, message;
         ReadHealth(out phase, out message);
         if (phase == "active") { lastHealthFailure = ""; return; }
-        if (phase != "incompatible" && phase != "degraded" && phase != "loading-failed" && phase != "monitor-unavailable") return;
+        if (phase != "incompatible" && phase != "degraded" && phase != "loading-failed") return;
         string key = phase + ":" + message;
         if (key == lastHealthFailure) return;
         lastHealthFailure = key;
@@ -312,7 +312,8 @@ internal sealed class TrayContext : ApplicationContext
         {
             string phase, message;
             ReadHealth(out phase, out message);
-            ShowTip(activeIsEnable ? message : "绿室主题已关闭，原外观已恢复。");
+            if (!activeIsEnable) ShowTip("绿室主题已关闭，原外观已恢复。");
+            else if (phase != "monitor-unavailable") ShowTip(message);
         }
         else
         {

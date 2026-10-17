@@ -28,7 +28,9 @@ function writeHealth(report){
 async function inspect(pages){
   const results=[];
   for(const target of pages){
-    try{results.push(await evaluate(target,inspectionExpression()));}
+    try{
+      results.push(await evaluate(target,inspectionExpression()));
+    }
     catch{if(target.url==='app://-/index.html')results.push({skipped:false,checks:[{id:'inspection-failed',ok:false,severity:'core',message:'无法完成客户端功能检测，请检查连接后重试。'}]});}
   }
   const report=summarize(results);writeHealth(report);return report;

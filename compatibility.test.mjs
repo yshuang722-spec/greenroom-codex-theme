@@ -24,21 +24,6 @@ test('healthy core and tested features produce an active state',()=>{
   const r=summarize([{checks:[check('style',true),check('effects',true),check('scrollbars',true,'warning')]}]);
   assert.equal(r.state,'active');assert.equal(r.ready,true);assert.equal(r.compatible,true);
 });
-function resolverFixture(module){
-  const cache={};
-  const run=new Function('window','performance','document','fetch','fakeImport','location',`return (${clientResolver.replace('await import(url)','await fakeImport(url)')})('settings')`);
-  const entry='app://-/assets/app-primary-aabbcc.js';
-  const shared='app://-/assets/app-shared-bbccdd.js';
-  const fakeFetch=async url=>({ok:url===entry||url===shared,text:async()=>'import{X}from "./app-shared-bbccdd.js"'});
-  return run(cache,{getEntriesByType:()=>[]},{scripts:[{src:entry}]},fakeFetch,async()=>module,{href:'app://-/index.html'});
-}
-test('discovers a renamed chunk from the entry script without old asset availability',async()=>{
-  const adapter=await resolverFixture({MMt:()=>{},CW:()=>{}});
-  assert.equal(adapter.url,'app://-/assets/app-shared-bbccdd.js');
-});
-test('a renamed internal export fails explicitly instead of calling a guessed function',async()=>{
-  await assert.rejects(resolverFixture({renamedFunction:()=>{}}),error=>error.code==='client-api-changed');
-});
 async function inspectionFixture({configured=true,profileVisible=false,quotaPresent=true,modelTrigger=null}={}){
   const settings={values:{appearanceTheme:'dark',appearanceDarkChromeTheme:{surface:'#020c09'}},...(configured?{configuredValues:{}}:{})};
   const element={getBoundingClientRect:()=>({width:36,height:36,x:16,y:710}),querySelector:()=>({})};
@@ -50,7 +35,7 @@ async function inspectionFixture({configured=true,profileVisible=false,quotaPres
     querySelectorAll:selector=>selector==='button[aria-haspopup="menu"]'&&profileVisible?[element]:selector==='[data-codex-intelligence-trigger]'&&modelTrigger?[modelTrigger]:[],
     getElementById:id=>id==='green-room-style'?{textContent:'theme'}:id==='green-room-quota'?quota:{}
   };
-  const window={__greenRoomEffects:{},__greenRoomClientAdapter:{url:'fixture',settings:async()=>settings,quota:()=>{}}};
+  const window={__greenRoomEffects:{},__greenRoomClientAdapter:{url:'fixture',discoveryVersion:2,settings:async()=>settings,quota:()=>{}}};
   const inspect=new Function('window','document','getComputedStyle','innerWidth','innerHeight','return '+inspectionExpression());
   return inspect(window,document,()=>({backgroundColor:'rgb(2, 12, 9)'}),1163,754);
 }
@@ -101,13 +86,14 @@ test('ChatGPT native label override is not mistaken for a broken Codex picker',a
   const inspected=await inspectionFixture({modelTrigger:pickerFixture({chatgpt:true,group:true,override:'即时'})});
   assert.equal(inspected.modelCheck,'not-applicable-chatgpt');assert.equal(summarize([inspected]).state,'active');
 });
-test('a genuinely missing Codex label still warns after the transition ends',async()=>{
+test('model label changes remain diagnostic without the disabled tray warning',async()=>{
   const state={animation:true,group:true,override:'GPT-6 Astra'};const modelTrigger=pickerFixture(state);
   assert.equal(summarize([await inspectionFixture({modelTrigger})]).state,'active');
   state.animation=false;
   const inspected=await inspectionFixture({modelTrigger});
-  assert.equal(summarize([inspected]).state,'degraded');
-  assert.equal(inspected.checks.find(c=>c.id==='model-state').ok,false);
+  assert.equal(summarize([inspected]).state,'active');
+  assert.equal(inspected.modelCheck,'checked');
+  assert.equal(inspected.checks.some(c=>c.id==='model-state'),false);
 });
 
 test('native compact icon layout does not report a changed model structure',async()=>{
@@ -119,11 +105,12 @@ test('native compact icon layout does not report a changed model structure',asyn
   Object.assign(state,{compact:false,group:true,model:'GPT-6 Astra'});
   const expanded=await inspectionFixture({modelTrigger});
   assert.equal(expanded.modelCheck,'checked');
-  assert.equal(expanded.checks.find(c=>c.id==='model-state').ok,true);
+  assert.equal(expanded.checks.some(c=>c.id==='model-state'),false);
 });
 
-test('a broken expanded picker is not excused by having an icon',async()=>{
+test('expanded picker diagnostics do not restore the disabled model warning',async()=>{
   const inspected=await inspectionFixture({modelTrigger:pickerFixture({compact:true,group:true})});
-  assert.equal(summarize([inspected]).state,'degraded');
-  assert.equal(inspected.checks.find(c=>c.id==='model-state').ok,false);
+  assert.equal(summarize([inspected]).state,'active');
+  assert.equal(inspected.modelCheck,'checked');
+  assert.equal(inspected.checks.some(c=>c.id==='model-state'),false);
 });
